@@ -65,7 +65,7 @@ int main() {
 
         cvtColor(frame, gray, COLOR_BGR2GRAY); //cvtCOlor converts the color space of an image fram:input, gray:output image, COLOR_BGR2GRAY prefec constrant to convert from BGRTOGRAY
         
-        vector<Rect> faces; //Stores the bounding rectangles around the face
+        vector<Rect> faces; //stores the bounding rectangles around the face
         face_cascade.detectMultiScale(gray, faces, 1.1, 3, 0, Size(30, 30)); //This function detects objects (in this case, faces) in the grayscale image using the Haar cascade classifier (face_cascade).
 
         for (const auto& face : faces) {
@@ -76,7 +76,7 @@ int main() {
             double confidence = 0.0;
             string labelName = "Unknown";
 
-            // Recognize face if the model is trained
+            // checks if the model is trained then check if u can recognize the face
             if (!images.empty()) {
                 model->predict(faceROI, predictedLabel, confidence);
                 if (confidence < 80 && nameDatabase.find(predictedLabel) != nameDatabase.end()) {
@@ -84,7 +84,7 @@ int main() {
                 }
             }
 
-            // Draw rectangle and label
+            // draw rectangle and label
             rectangle(frame, face, Scalar(255, 0, 0), 2);
             putText(frame, labelName, Point(face.x, face.y - 10), FONT_HERSHEY_SIMPLEX, 0.9, Scalar(0, 255, 0), 2);
         }
@@ -100,14 +100,14 @@ int main() {
             string name;
             cin >> name;
 
-            // Use the first detected face for adding
+            // use the first detected face for adding
             if (!faces.empty()) {
                 Mat faceROI = gray(faces[0]);
                 resize(faceROI, faceROI, Size(100, 100));
                 addNewPerson(name, faceROI);
                 cout << name << " added to the database." << endl;
                 model->train(images, labels);  // Ensure immediate model update
-                // **Re-recognize faces in the current frame**
+               
                 //faces.clear();
                 face_cascade.detectMultiScale(gray, faces, 1.1, 3, 0, Size(30, 30));
                 for (const auto& face : faces) {
